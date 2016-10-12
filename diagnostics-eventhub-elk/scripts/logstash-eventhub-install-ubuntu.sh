@@ -115,17 +115,18 @@ sudo apt-get update
 sudo apt-get -y --force-yes install logstash
 
 # Install Azure WAD Event Hub Plugin
-log "Installing Azure WAD Event Hub Plugin"
+log "Installing Plugins: Azure WAD Event Hub and Redis"
 sudo /opt/logstash/bin/logstash-plugin install logstash-input-azurewadeventhub
-
+sudo /opt/logstash/bin/logstash-plugin install logstash-input-redis
 
 # Install Logstash configuration
 
 log "Generating Logstash Config"
 echo "input {" > ~/logstash.conf
 echo "  azurewadeventhub {key => '$EH_KEY' username => '$EH_KEY_NAME' eventhub => '$EH_ENTITY'  namespace => '$EH_NAMESPACE' partitions => $EH_PARTITIONS}" >> ~/logstash.conf
+echo "  redis {data_type => 'list' host => 'logz.redis.cache.windows.net' key => 'h4me_layer7_gtwy_mon' password => '/ppUlPSmGAsVPnbOGC+0Xutg5hhswidyPR63ZCUCSt0=' port => 6380}" >> ~/logstash.conf
 echo "}" >> ~/logstash.conf
-echo "output {elasticsearch {hosts => ['$ES_CLUSTER_IP:9200'] index => 'wad'}}" >> ~/logstash.conf
+echo "output {elasticsearch {hosts => ['$ES_CLUSTER_IP:9200'] index => 'logstash-default'}}" >> ~/logstash.conf
 cat ~/logstash.conf
 
 log "Installing user configuration file"
